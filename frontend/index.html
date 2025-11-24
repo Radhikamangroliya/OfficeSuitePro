@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OfficeOS Timeline</title>
+
+    <!-- Google Identity Services script (required for @react-oauth/google) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- Optional: expose Google Client ID on window (if you want it globally) -->
+    <script>
+      // Replace this at build time or manually with your real client id if needed
+      window.VITE_GOOGLE_CLIENT_ID = "%VITE_GOOGLE_CLIENT_ID%";
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <!-- Load your React (Vite) app -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

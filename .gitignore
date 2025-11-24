@@ -1,0 +1,70 @@
+# ==========
+# OS Files
+# ==========
+.DS_Store
+Thumbs.db
+
+# ==========
+# Node / React
+# ==========
+node_modules/
+dist/
+build/
+.cache/
+out/
+.next/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# ==========
+# .NET / C# backend
+# ==========
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.vs/
+wwwroot/
+
+# ASP.NET Secrets
+appsettings.Development.json
+appsettings.Production.json
+appsettings.json
+
+# ==========
+# Logs
+# ==========
+*.log
+logs/
+log/
+
+# ==========
+# IDE / Editors
+# ==========
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==========
+# Build Artifacts
+# ==========
+coverage/
+*.pid
+*.seed
+*.tgz
+
+# ==========
+# Misc
+# ==========
+*.zip
+*.tar
+*.gz
+*.pyc

@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dashboard Layout */
+.dashboard-grid {
+  @apply grid grid-cols-3 gap-5;
+}
+
+/* Widget Card */
+.card {
+  @apply bg-white p-4 rounded-xl shadow-md;
+}
+
+/* GitHub event item */
+.event-item {
+  @apply mb-2;
+}

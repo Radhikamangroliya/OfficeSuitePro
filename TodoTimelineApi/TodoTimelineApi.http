@@ -1,0 +1,6 @@
+@TodoTimelineApi_HostAddress = http://localhost:5007
+
+GET {{TodoTimelineApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
