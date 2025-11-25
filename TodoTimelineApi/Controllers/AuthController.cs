@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TodoTimelineApi.DTOs;
 using TodoTimelineApi.Services.Interfaces;
 
 namespace TodoTimelineApi.Controllers
@@ -9,37 +8,42 @@ namespace TodoTimelineApi.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly IAuthService _auth;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService auth)
         {
-            _authService = authService;
+            _auth = auth;
         }
 
-        // =========================================
-        //  GOOGLE LOGIN
-        // =========================================
-        [HttpPost("google")]
+        [HttpGet("google")]
         [AllowAnonymous]
-        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
+        public IActionResult GoogleLogin([FromQuery] string redirect_uri)
         {
-            var result = await _authService.AuthenticateGoogleAsync(request.IdToken);
-            return Ok(result);
+            var url = _auth.GetGoogleOAuthUrl(redirect_uri);
+            return Redirect(url);
         }
 
-        // =========================================
-        //  GET CURRENT USER
-        // =========================================
+        [HttpGet("google/callback")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleCallback(
+            [FromQuery] string code,
+            [FromQuery] string redirect_uri)
+        {
+            var result = await _auth.ExchangeCodeForTokenAsync(code, redirect_uri);
+
+            return Redirect($"{redirect_uri}?token={result.Token}");
+        }
+
         [HttpGet("me")]
         [Authorize]
-        public IActionResult GetCurrentUser()
+        public IActionResult Me()
         {
-            var id = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            var email = User.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
-            var name = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
-            var provider = User.Claims.FirstOrDefault(c => c.Type == "provider")?.Value;
-
-            return Ok(new { id, email, name, provider });
+            return Ok(new
+            {
+                id = User.FindFirst("id")?.Value,
+                email = User.FindFirst("email")?.Value,
+                name = User.FindFirst("name")?.Value
+            });
         }
     }
 }

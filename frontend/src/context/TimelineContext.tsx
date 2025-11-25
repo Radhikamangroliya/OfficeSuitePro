@@ -96,9 +96,9 @@ export const TimelineProvider = ({ children }: any) => {
 
   const filteredEntries = entries.filter((e) => {
     // Handle both PascalCase and camelCase property names
-    const title = e.Title || e.title || "";
-    const description = e.Description || e.description || "";
-    const entryCategory = e.Category || e.category || "";
+    const title = e.title || e.title || "";
+    const description = e.description || e.description || "";
+    const entryCategory = e.category || e.category || "";
 
     const matchSearch =
       !search ||

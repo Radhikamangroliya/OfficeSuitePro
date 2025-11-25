@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Timeline from "./pages/Timeline";
 import Dashboard from "./pages/Dashboard";
 import CalendarPage from "./pages/CalendarPage";
+import OAuthCallback from "./pages/OAuthCallback";
 
 export default function App() {
   return (
@@ -13,41 +14,19 @@ export default function App() {
       <TimelineProvider>
         <Router>
           <Routes>
-            {/* Public route */}
+
+            <Route path="/oauth-callback" element={<OAuthCallback />} />
+
             <Route path="/login" element={<Login />} />
 
-            {/* Dashboard page */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/" element={<Protected><Timeline /></Protected>} />
 
-            {/* Google Calendar page */}
-            <Route
-              path="/calendar"
-              element={
-                <ProtectedRoute>
-                  <CalendarPage />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
 
-            {/* Home - Timeline page */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Timeline />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/calendar" element={<Protected><CalendarPage /></Protected>} />
 
-            {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
+
           </Routes>
         </Router>
       </TimelineProvider>
@@ -55,8 +34,7 @@ export default function App() {
   );
 }
 
-function ProtectedRoute({ children }: { children: JSX.Element }) {
+function Protected({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem("token");
-  if (!token) return <Navigate to="/login" replace />;
-  return children;
+  return token ? children : <Navigate to="/login" replace />;
 }

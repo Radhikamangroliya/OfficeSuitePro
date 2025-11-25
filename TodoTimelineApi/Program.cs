@@ -1,74 +1,83 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Microsoft.OpenApi.Models;
 using TodoTimelineApi.Data;
 using TodoTimelineApi.Services.Interfaces;
 using TodoTimelineApi.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //
 // -------------------------------------------------------------
-// 1️⃣ Database Setup (SQLite)
+// 1️⃣ DATABASE (SQLite)
 // -------------------------------------------------------------
-// Here I'm connecting Entity Framework to a local SQLite database.
-// This keeps things simple during development and also satisfies
-// the project requirement for persistent storage.
-//
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"))
 );
 
 //
 // -------------------------------------------------------------
-// 2️⃣ Register Application Services
+// 2️⃣ DEPENDENCY INJECTION
 // -------------------------------------------------------------
-// Adding my services to the DI container so controllers can
-// request them through constructor injection. These services
-// handle all the core logic for authentication and timeline CRUD.
-//
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITimelineService, TimelineService>();
-// Later I'll uncomment these once I finish API integrations.
 builder.Services.AddScoped<IGithubService, GithubService>();
 builder.Services.AddScoped<IGoogleCalendarService, GoogleCalendarService>();
 
-//builder.Services.AddScoped<ISpotifyService, SpotifyService>();
-
 //
 // -------------------------------------------------------------
-// 3️⃣ Controller + JSON Options
+// 3️⃣ CONTROLLERS + JSON
 // -------------------------------------------------------------
-// Enabling controllers and customizing JSON settings.
-// I'm keeping PascalCase because my DTOs use it, but also
-// allowing case-insensitive input so the frontend doesn't break.
-//
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.PropertyNamingPolicy = null; 
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
 
 //
 // -------------------------------------------------------------
-// 4️⃣ Swagger (API Documentation)
+// 4️⃣ SWAGGER + JWT AUTHORIZATION BUTTON
 // -------------------------------------------------------------
-// Enabling Swagger so it's easier to test endpoints and so that
-// the project includes proper API documentation, which is a
-// submission requirement.
-//
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "TodoTimelineApi",
+        Version = "v1"
+    });
+
+    // --- JWT Security Definition ---
+    var securityScheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Enter: Bearer {token}",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Bearer"
+        }
+    };
+
+    c.AddSecurityDefinition("Bearer", securityScheme);
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { securityScheme, new string[] {} }
+    });
+});
 
 //
 // -------------------------------------------------------------
-// 5️⃣ CORS for React Frontend
+// 5️⃣ CORS FOR FRONTEND
 // -------------------------------------------------------------
-// Allowing requests from the local React dev server. Without this,
-// the browser would block calls from the frontend to the API.
-//
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -76,19 +85,16 @@ builder.Services.AddCors(options =>
         policy
             .AllowAnyHeader()
             .AllowAnyMethod()
+            .AllowCredentials()
             .WithOrigins("http://localhost:5173", "http://127.0.0.1:5173");
     });
 });
 
 //
 // -------------------------------------------------------------
-// 6️⃣ JWT Authentication Setup
+// 6️⃣ JWT AUTHENTICATION
 // -------------------------------------------------------------
-// Configuring JWT bearer authentication. I'm loading the signing
-// key and issuer/audience values from appsettings.json.
-// This part validates tokens for all protected API routes.
-//
-var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtKey = Convert.FromBase64String(builder.Configuration["Jwt:Key"]);
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 
@@ -101,32 +107,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-
             ValidIssuer = jwtIssuer,
             ValidAudience = jwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey))
+            IssuerSigningKey = new SymmetricSecurityKey(jwtKey)
         };
     });
 
-//
-// -------------------------------------------------------------
-// 7️⃣ Authorization Middleware
-// -------------------------------------------------------------
-// Just enabling the built-in authorization system. Most of my
-// timeline endpoints will use [Authorize] attribute.
-//
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
 //
 // -------------------------------------------------------------
-// 8️⃣ Apply EF Core Migrations Automatically
+// 7️⃣ APPLY DB MIGRATIONS
 // -------------------------------------------------------------
-// Running migrations at startup so the database always matches
-// the models. This prevents common errors during development.
-//
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -135,11 +129,8 @@ using (var scope = app.Services.CreateScope())
 
 //
 // -------------------------------------------------------------
-// 9️⃣ Common Middleware
+// 8️⃣ MIDDLEWARE PIPELINE
 // -------------------------------------------------------------
-// Enabling CORS, Swagger (only in development), authentication,
-// and authorization. This is the normal pipeline for most APIs.
-//
 app.UseCors("AllowFrontend");
 
 if (app.Environment.IsDevelopment())
@@ -151,13 +142,6 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-//
-// -------------------------------------------------------------
-// 🔟 Map All Controllers
-// -------------------------------------------------------------
-// This tells ASP.NET Core to look for controller classes and
-// map their routes automatically.
-//
 app.MapControllers();
 
 app.Run();
