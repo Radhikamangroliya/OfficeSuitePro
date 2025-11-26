@@ -265,6 +265,56 @@ The Google Client ID(.env) is stored in `frontend/.env`. Update it if needed:
 ```typescript
 VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
 ```
+####📦 Install Frontend Dependencies (React + TypeScript)
+
+Your frontend uses React, TypeScript, Axios, routing, TailwindCSS, icons, and Vite.
+```
+npm install react react-dom
+npm install -D typescript @types/react @types/react-dom
+npm install react-router-dom
+npm install -D @types/react-router-dom
+npm install axios
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+npm install lucide-react
+npm install @vitejs/plugin-react
+
+```
+index.css(`src/index.css`) must include:
+```
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dashboard Layout */
+.dashboard-grid {
+  @apply grid grid-cols-3 gap-5;
+}
+
+/* Widget Card */
+.card {
+  @apply bg-white p-4 rounded-xl shadow-md;
+}
+
+/* GitHub event item */
+.event-item {
+  @apply mb-2;
+}
+
+/* Google Sign-In Button Styling - Professional Rounded */
+#root [id^="gsi"] {
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  transition: all 0.3s ease !important;
+}
+
+#root [id^="gsi"]:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  transform: translateY(-1px) !important;
+}
+
+```
 
 #### Step 4: Run the Frontend
 
