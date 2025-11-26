@@ -52,23 +52,14 @@ Before you begin, ensure you have the following installed:
 
 ### Part 1: Backend Setup
 
-#### Step 1: Install Entity Framework Core Tools
 
-```bash
-# Install EF Core CLI tool globally
-dotnet tool install --global dotnet-ef --version 8.0.21
-
-# Verify installation
-dotnet ef --version
-```
-
-#### Step 2: Navigate to Backend Directory
+#### Step 1: Navigate to Backend Directory
 
 ```bash
 cd TodoTimelineApi
 ```
 
-#### Step 3: Install Required NuGet Packages
+#### Step 2: Install Required NuGet Packages
 
 The following packages are already included in `TodoTimelineApi.csproj`:
 
@@ -109,13 +100,13 @@ dotnet add package Swashbuckle.AspNetCore
 - `Google.Apis.Auth`: Google OAuth token validation
 - `Swashbuckle.AspNetCore`: Swagger/OpenAPI documentation
 
-#### Step 4: Restore Dependencies
+#### Step 3: Restore Dependencies
 
 ```bash
 dotnet restore
 ```
 
-#### Step 5: Configure App Settings
+#### Step 4: Configure App Settings
 
 Edit `appsettings.Development.json`:
 
@@ -144,7 +135,7 @@ Edit `appsettings.Development.json`:
 }
 ```
 
-#### Step 6: Generate JWT Key
+#### Step 5: Generate JWT Key
 
 Generate a secure base64-encoded JWT key:
 
@@ -166,7 +157,7 @@ dotnet user-secrets set "Jwt:Key" "$(openssl rand -base64 64)"
 
 Copy the generated key to `appsettings.Development.json` under `Jwt:Key`.
 
-#### Step 7: Set Up Google OAuth
+#### Step 6: Set Up Google OAuth
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project named "MyOS" or select an existing one
@@ -188,7 +179,7 @@ Copy the generated key to `appsettings.Development.json` under `Jwt:Key`.
    - **Client ID**: Copy to `appsettings.Development.json` under `Authentication:Google:ClientId`
    - **Client Secret**: Copy to `appsettings.Development.json` under `Authentication:Google:ClientSecret`
 
-#### Step 8: Set Up GitHub Token
+#### Step 7: Set Up GitHub Token
 
 1. Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
 2. Click "Generate new token (classic)"
@@ -199,7 +190,7 @@ Copy the generated key to `appsettings.Development.json` under `Jwt:Key`.
 5. Generate token and copy it
 6. Paste token in `appsettings.Development.json` under `Github:Token`
 
-#### Step 9: Database Migrations
+#### Step 8: Database Migrations
 
 **Create Initial Migration:**
 ```bash
@@ -215,13 +206,13 @@ dotnet ef database update
 
 This creates the SQLite database file (`timeline.db`) in the `TodoTimelineApi` directory.
 
-#### Step 10: Build the Backend
+#### Step 9: Build the Backend
 
 ```bash
 dotnet build
 ```
 
-#### Step 11: Run the Backend
+#### Step 10: Run the Backend
 
 ```bash
 dotnet run
