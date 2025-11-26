@@ -64,22 +64,22 @@ export const TeamActivity = () => {
   return (
     <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm p-6">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Team Activity</h3>
+        <h3 className="text-lg font-semibold text-gray-900">My Activity</h3>
       </div>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-          <span className="text-sm text-gray-700">Total Contributions</span>
+          <span className="text-sm text-gray-700">My Total Entries</span>
           <span className="text-lg font-semibold text-gray-900">{totalTeamEntries}</span>
         </div>
 
         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-          <span className="text-sm text-gray-700">Active Contributors</span>
+          <span className="text-sm text-gray-700">My Active Days</span>
           <span className="text-lg font-semibold text-gray-900">{uniqueContributors}</span>
         </div>
 
         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-          <span className="text-sm text-gray-700">Collaboration Events</span>
+          <span className="text-sm text-gray-700">My Collaborations</span>
           <span className="text-lg font-semibold text-gray-900">{collaborationEvents}</span>
         </div>
       </div>

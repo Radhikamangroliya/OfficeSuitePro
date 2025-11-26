@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TodoTimelineApi.Data;
 using TodoTimelineApi.Models;
 using TodoTimelineApi.Services.Interfaces;
+using TodoTimelineApi.DTOs;
 
 namespace TodoTimelineApi.Services
 {
@@ -38,19 +39,42 @@ namespace TodoTimelineApi.Services
             return entry;
         }
 
-        public async Task<TimelineEntry?> UpdateEntryAsync(int id, TimelineEntry updated, int userId)
+        public async Task<TimelineEntry?> UpdateEntryAsync(int id, TimelineEntryRequest request, int userId)
         {
             var existing = await GetEntryByIdAsync(id, userId);
             if (existing == null) return null;
 
-            existing.Title = updated.Title ?? existing.Title;
-            existing.Description = updated.Description ?? existing.Description;
-            existing.EventDate = updated.EventDate;
-            existing.EntryType = updated.EntryType ?? existing.EntryType;
-            existing.Category = updated.Category ?? existing.Category;
-            existing.ImageUrl = updated.ImageUrl ?? existing.ImageUrl;
-            existing.ExternalUrl = updated.ExternalUrl ?? existing.ExternalUrl;
-            existing.Metadata = updated.Metadata ?? existing.Metadata;
+            // Update only provided fields
+            if (!string.IsNullOrWhiteSpace(request.Title))
+                existing.Title = request.Title;
+
+            if (request.Description != null)
+                existing.Description = request.Description;
+
+            if (request.EventDate.HasValue)
+                existing.EventDate = request.EventDate.Value;
+
+            if (!string.IsNullOrWhiteSpace(request.EntryType))
+                existing.EntryType = request.EntryType;
+
+            if (request.Category != null)
+                existing.Category = request.Category;
+
+            if (request.ImageUrl != null)
+                existing.ImageUrl = request.ImageUrl;
+
+            if (request.ExternalUrl != null)
+                existing.ExternalUrl = request.ExternalUrl;
+
+            if (request.SourceApi != null)
+                existing.SourceApi = request.SourceApi;
+
+            if (request.ExternalId != null)
+                existing.ExternalId = request.ExternalId;
+
+            if (request.Metadata != null)
+                existing.Metadata = request.Metadata;
+
             existing.UpdatedAt = DateTime.UtcNow;
 
             await _db.SaveChangesAsync();

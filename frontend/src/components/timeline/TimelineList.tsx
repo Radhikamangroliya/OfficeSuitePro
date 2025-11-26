@@ -22,9 +22,9 @@ export const TimelineList = () => {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <p className="text-gray-500 text-lg">No timeline entries yet</p>
+          <p className="text-gray-500 text-lg">No entries yet</p>
           <p className="text-gray-400 text-sm mt-2">
-            Start adding entries to see them here
+            Start adding your entries to see them here
           </p>
         </div>
       </div>

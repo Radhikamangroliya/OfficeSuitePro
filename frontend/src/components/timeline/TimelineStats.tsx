@@ -7,10 +7,18 @@ interface StatCardProps {
 
 const StatCard = ({ label, value }: StatCardProps) => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm hover:shadow-md transition-shadow p-6 flex-1">
-      <div>
-        <p className="text-sm font-medium text-gray-600">{label}</p>
-        <p className="text-2xl font-semibold text-gray-900 mt-1">{value}</p>
+    <div className="group relative bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 rounded-2xl p-8 text-white shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden flex-1">
+      {/* Animated Background Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-700/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      
+      {/* Decorative Elements */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16"></div>
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-12 -mb-12"></div>
+      
+      <div className="relative z-10">
+        <p className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">{label}</p>
+        <p className="text-4xl font-bold text-white mb-1">{value}</p>
+        <div className="mt-4 h-1 w-16 bg-gradient-to-r from-white/30 to-transparent rounded-full"></div>
       </div>
     </div>
   );
@@ -55,15 +63,15 @@ export const TimelineStats = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <StatCard
-        label="Productive hours"
+        label="My Productive Hours"
         value={`${productiveHours}h`}
       />
       <StatCard
-        label="Coding days"
+        label="My Coding Days"
         value={codingDays.toString()}
       />
       <StatCard
-        label="Collaboration events"
+        label="My Collaborations"
         value={collaborationEvents.toString()}
       />
     </div>

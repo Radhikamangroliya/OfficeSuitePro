@@ -21,7 +21,10 @@ export const createTimelineEntry = async (entry: any, token: string) => {
 
 export const updateTimelineEntry = async (id: number, data: any, token: string) => {
   const res = await axios.put(`${API}/${id}`, data, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
   });
   return res.data;
 };

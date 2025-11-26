@@ -41,82 +41,36 @@ namespace TodoTimelineApi.Services
                 "&prompt=consent";
         }
 
+        // --------------------------
+        // OAUTH CODE → TOKEN
+        // --------------------------
         public async Task<AuthResponse> ExchangeCodeForTokenAsync(string code, string redirectUri)
         {
-            try
+            var clientId = _config["Authentication:Google:ClientId"];
+            var clientSecret = _config["Authentication:Google:ClientSecret"];
+
+            var payloadData = new Dictionary<string, string>()
             {
-                var clientId = _config["Authentication:Google:ClientId"];
-                var clientSecret = _config["Authentication:Google:ClientSecret"];
+                { "code", code },
+                { "client_id", clientId },
+                { "client_secret", clientSecret },
+                { "redirect_uri", redirectUri },
+                { "grant_type", "authorization_code" }
+            };
 
-                var payloadData = new Dictionary<string, string>()
-                {
-                    { "code", code },
-                    { "client_id", clientId },
-                    { "client_secret", clientSecret },
-                    { "redirect_uri", redirectUri },
-                    { "grant_type", "authorization_code" }
-                };
+            var response = await _http.PostAsync(
+                "https://oauth2.googleapis.com/token",
+                new FormUrlEncodedContent(payloadData)
+            );
 
-                var response = await _http.PostAsync(
-                    "https://oauth2.googleapis.com/token",
-                    new FormUrlEncodedContent(payloadData)
-                );
+            var json = await response.Content.ReadAsStringAsync();
 
-                var json = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Google token exchange failed: " + json);
 
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception("Google token exchange failed: " + json);
+            var google = JsonSerializer.Deserialize<GoogleOAuthResponse>(json);
 
-                var google = JsonSerializer.Deserialize<GoogleOAuthResponse>(json);
-
-                var payload = await GoogleJsonWebSignature.ValidateAsync(google.id_token);
-
-                var user = await _db.Users
-                    .FirstOrDefaultAsync(u => u.OAuthProvider == "Google" && u.OAuthId == payload.Subject);
-
-                if (user == null)
-                {
-                    user = new User
-                    {
-                        OAuthProvider = "Google",
-                        OAuthId = payload.Subject,
-                        Email = payload.Email,
-                        DisplayName = payload.Name,
-                        ProfileImageUrl = payload.Picture,
-                        CreatedAt = DateTime.UtcNow,
-                        LastLoginAt = DateTime.UtcNow
-                    };
-
-                    _db.Users.Add(user);
-                    await _db.SaveChangesAsync();
-                }
-                else
-                {
-                    user.LastLoginAt = DateTime.UtcNow;
-                    await _db.SaveChangesAsync();
-                }
-
-                var jwt = GenerateJwtToken(user);
-                var refreshToken = GenerateRefreshToken();
-
-                return new AuthResponse(
-                    Token: jwt,
-                    RefreshToken: refreshToken,
-                    ExpiresAt: DateTime.UtcNow.AddMinutes(60),
-                    User: new UserInfo(
-                        Id: user.Id.ToString(),
-                        Email: user.Email,
-                        Name: user.DisplayName,
-                        Picture: user.ProfileImageUrl,
-                        Provider: user.OAuthProvider
-                    )
-                );
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Google OAuth error: " + ex);
-                throw;
-            }
+            return await AuthenticateWithGoogleAsync(google.id_token);
         }
 
         private class GoogleOAuthResponse
@@ -126,9 +80,60 @@ namespace TodoTimelineApi.Services
             public string refresh_token { get; set; }
         }
 
+        // --------------------------
+        // DIRECT ID-TOKEN LOGIN
+        // --------------------------
+        public async Task<AuthResponse> AuthenticateWithGoogleAsync(string idToken)
+        {
+            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+
+            var user = await _db.Users
+                .FirstOrDefaultAsync(u =>
+                    u.OAuthProvider == "Google" &&
+                    u.OAuthId == payload.Subject);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    OAuthProvider = "Google",
+                    OAuthId = payload.Subject,
+                    Email = payload.Email,
+                    DisplayName = payload.Name,
+                    ProfileImageUrl = payload.Picture,
+                    CreatedAt = DateTime.UtcNow,
+                    LastLoginAt = DateTime.UtcNow
+                };
+
+                _db.Users.Add(user);
+                await _db.SaveChangesAsync();
+            }
+            else
+            {
+                user.LastLoginAt = DateTime.UtcNow;
+                await _db.SaveChangesAsync();
+            }
+
+            var jwt = GenerateJwtToken(user);
+            var refreshToken = GenerateRefreshToken();
+
+            return new AuthResponse(
+                Token: jwt,
+                RefreshToken: refreshToken,
+                ExpiresAt: DateTime.UtcNow.AddMinutes(60),
+                User: new UserInfo(
+                    Id: user.Id.ToString(),
+                    Email: user.Email,
+                    Name: user.DisplayName,
+                    Picture: user.ProfileImageUrl,
+                    Provider: user.OAuthProvider
+                )
+            );
+        }
+
         public Task<AuthResponse> AuthenticateGoogleAsync(string idToken)
         {
-            throw new NotImplementedException("Use redirect login.");
+            throw new NotImplementedException("Use AuthenticateWithGoogleAsync");
         }
 
         public Task<AuthResponse> RefreshTokenAsync(string refreshToken)

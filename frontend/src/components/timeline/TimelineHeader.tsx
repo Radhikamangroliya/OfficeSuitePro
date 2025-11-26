@@ -40,7 +40,7 @@ export const TimelineHeader = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={logout}
-              className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white shadow-md hover:shadow-lg transition-shadow"
+              className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-white shadow-md hover:shadow-lg transition-shadow"
             >
               <User className="w-5 h-5" />
             </button>

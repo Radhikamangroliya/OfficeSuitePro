@@ -36,7 +36,7 @@ function GithubWidget() {
         />
         <button
           onClick={fetchEvents}
-          className="bg-blue-600 text-white px-3 py-2 rounded"
+          className="bg-gray-800 text-white px-3 py-2 rounded hover:bg-gray-900 transition-colors"
         >
           Search
         </button>

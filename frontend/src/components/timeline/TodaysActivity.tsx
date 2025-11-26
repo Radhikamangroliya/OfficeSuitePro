@@ -14,17 +14,24 @@ export const TodaysActivity = () => {
   const todaysEntries = entries
     .filter(entry => {
       // Handle both PascalCase and camelCase property names
-      const entryDate = new Date(entry.EventDate || entry.eventDate || entry.CreatedAt || entry.createdAt || new Date());
+      const eventDate = entry.EventDate || entry.eventDate;
+      const createdAt = entry.CreatedAt || entry.createdAt;
+      
+      if (!eventDate && !createdAt) return false;
+      
+      const entryDate = new Date(eventDate || createdAt);
+      if (isNaN(entryDate.getTime())) return false;
+      
       entryDate.setHours(0, 0, 0, 0);
       return entryDate.getTime() === today.getTime();
     })
     .sort((a, b) => {
       // Handle both PascalCase and camelCase property names
-      const dateA = new Date(a.EventDate || a.eventDate || a.CreatedAt || a.createdAt || new Date()).getTime();
-      const dateB = new Date(b.EventDate || b.eventDate || b.CreatedAt || b.createdAt || new Date()).getTime();
+      const dateA = new Date(a.EventDate || a.eventDate || a.CreatedAt || a.createdAt || 0).getTime();
+      const dateB = new Date(b.EventDate || b.eventDate || b.CreatedAt || b.createdAt || 0).getTime();
       return dateB - dateA;
     })
-    .slice(0, 5);
+    .slice(0, 10);
 
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -42,78 +49,46 @@ export const TodaysActivity = () => {
     const category = (entry.Category || entry.category || "").toLowerCase();
     const title = (entry.Title || entry.title || "").toLowerCase();
 
-    if (category.includes("github") || title.includes("upload")) {
-      return <Upload className="w-4 h-4 text-red-600" />;
+    if (category.includes("github") || title.includes("github") || title.includes("upload")) {
+      return <Upload className="w-4 h-4 text-gray-800" />;
     }
-    if (category.includes("meeting") || title.includes("completed")) {
-      return <CheckCircle2 className="w-4 h-4 text-green-600" />;
+    if (category.includes("meeting") || title.includes("meeting") || title.includes("completed")) {
+      return <CheckCircle2 className="w-4 h-4 text-gray-800" />;
     }
-    if (category.includes("slack") || title.includes("comment")) {
-      return <MessageSquarePlus className="w-4 h-4 text-red-600" />;
+    if (category.includes("slack") || title.includes("slack") || title.includes("comment")) {
+      return <MessageSquarePlus className="w-4 h-4 text-gray-800" />;
     }
-    return <CheckCircle2 className="w-4 h-4 text-gray-600" />;
+    return <CheckCircle2 className="w-4 h-4 text-gray-800" />;
   };
 
   const formatActivityText = (entry: any) => {
     // Handle both PascalCase and camelCase property names
-    const category = (entry.Category || entry.category || "").toLowerCase();
-    const title = (entry.Title || entry.title || "").toLowerCase();
     const displayTitle = entry.Title || entry.title || "";
-
-    if (title.includes("upload")) {
-      return `You uploaded ${displayTitle}`;
-    }
-    if (title.includes("completed")) {
-      return `You completed ${displayTitle}`;
-    }
-    if (title.includes("comment")) {
-      return `New comment in ${displayTitle}`;
-    }
-    return displayTitle;
+    const description = entry.Description || entry.description || "";
+    
+    // Return the title, or description if no title
+    return displayTitle || description || "Untitled entry";
   };
 
-  // Sample activities if no entries today
-  const sampleActivities = [
-    {
-      id: "sample-1",
-      text: "Jane uploaded Marketing.pdf",
-      icon: <Upload className="w-4 h-4 text-red-600" />,
-      time: "1h ago",
-    },
-    {
-      id: "sample-2",
-      text: "You completed Redesign homepage",
-      icon: <CheckCircle2 className="w-4 h-4 text-green-600" />,
-      time: "Apr 24",
-    },
-    {
-      id: "sample-3",
-      text: "New comment in ⇥ttalling",
-      icon: <MessageSquarePlus className="w-4 h-4 text-red-600" />,
-      time: "Apr 24",
-    },
-  ];
-
-  const activities = todaysEntries.length > 0
-    ? todaysEntries.map((entry, index) => {
-        // Handle both PascalCase and camelCase property names, with safe fallback for ID
-        const entryId = entry.id || entry.Id || entry.id?.toString() || entry.Id?.toString() || `entry-${index}-${Date.now()}`;
-        const eventDate = entry.EventDate || entry.eventDate;
-        const createdAt = entry.CreatedAt || entry.createdAt;
-        const dateString = eventDate || createdAt || new Date().toISOString();
-        
-        return {
-          id: entryId.toString(),
-          text: formatActivityText(entry),
-          icon: getActivityIcon(entry),
-          time: getTimeAgo(dateString),
-        };
-      })
-    : sampleActivities;
+  // Map actual timeline entries to activities
+  const activities = todaysEntries.map((entry, index) => {
+    // Handle both PascalCase and camelCase property names, with safe fallback for ID
+    const entryId = entry.id || entry.Id || entry.id?.toString() || entry.Id?.toString() || `entry-${index}-${Date.now()}`;
+    const eventDate = entry.EventDate || entry.eventDate;
+    const createdAt = entry.CreatedAt || entry.createdAt;
+    const dateString = eventDate || createdAt || new Date().toISOString();
+    
+    return {
+      id: entryId.toString(),
+      text: formatActivityText(entry),
+      icon: getActivityIcon(entry),
+      time: getTimeAgo(dateString),
+    };
+  });
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-base font-semibold text-gray-900 mb-5">Today's Activity</h3>
+      <h3 className="text-base font-semibold text-gray-900 mb-5">My Today</h3>
       <div className="space-y-3">
         {activities.map((activity) => (
           <div key={activity.id} className="flex items-start gap-3 py-2 px-3 rounded-md hover:bg-gray-50 transition-colors">

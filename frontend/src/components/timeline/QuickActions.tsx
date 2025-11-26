@@ -25,16 +25,16 @@ export const QuickActions = () => {
     <div className="flex items-center gap-2">
       <button
         onClick={handleExport}
-        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
-        title="Export timeline"
+        className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all shadow-sm hover:shadow-md font-semibold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        title="Export my timeline"
       >
         <Download className="w-4 h-4" />
         <span className="hidden md:inline">Export</span>
       </button>
       <button
         onClick={handleRefresh}
-        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
-        title="Refresh timeline"
+        className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all shadow-sm hover:shadow-md font-semibold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        title="Refresh my timeline"
       >
         <RefreshCw className="w-4 h-4" />
         <span className="hidden md:inline">Refresh</span>

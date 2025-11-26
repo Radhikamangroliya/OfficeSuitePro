@@ -9,129 +9,104 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//
-// -------------------------------------------------------------
-// 1️⃣ DATABASE (SQLite)
-// -------------------------------------------------------------
+// ---------------- DB ----------------
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"))
 );
 
-//
-// -------------------------------------------------------------
-// 2️⃣ DEPENDENCY INJECTION
-// -------------------------------------------------------------
+// ---------------- Services ----------------
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITimelineService, TimelineService>();
 builder.Services.AddScoped<IGithubService, GithubService>();
-builder.Services.AddScoped<IGoogleCalendarService, GoogleCalendarService>();
 
-//
-// -------------------------------------------------------------
-// 3️⃣ CONTROLLERS + JSON
-// -------------------------------------------------------------
 builder.Services.AddControllers()
-    .AddJsonOptions(options =>
+    .AddJsonOptions(opts =>
     {
-        options.JsonSerializerOptions.PropertyNamingPolicy = null;
-        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        opts.JsonSerializerOptions.PropertyNamingPolicy = null;
     });
 
-//
-// -------------------------------------------------------------
-// 4️⃣ SWAGGER + JWT AUTHORIZATION BUTTON
-// -------------------------------------------------------------
+// ---------------- Swagger ----------------
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "TodoTimelineApi",
+        Title = "TodoTimeline API",
         Version = "v1"
     });
 
-    // --- JWT Security Definition ---
-    var securityScheme = new OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Description = "Enter: Bearer {token}",
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
         Scheme = "bearer",
-        BearerFormat = "JWT",
-        Reference = new OpenApiReference
-        {
-            Type = ReferenceType.SecurityScheme,
-            Id = "Bearer"
-        }
-    };
-
-    c.AddSecurityDefinition("Bearer", securityScheme);
+        BearerFormat = "JWT"
+    });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
-        { securityScheme, new string[] {} }
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Id = "Bearer",
+                    Type = ReferenceType.SecurityScheme
+                }
+            },
+            new string[] {}
+        }
     });
 });
 
-//
-// -------------------------------------------------------------
-// 5️⃣ CORS FOR FRONTEND
-// -------------------------------------------------------------
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()
-            .WithOrigins("http://localhost:5173", "http://127.0.0.1:5173");
-    });
-});
-
-//
-// -------------------------------------------------------------
-// 6️⃣ JWT AUTHENTICATION
-// -------------------------------------------------------------
-var jwtKey = Convert.FromBase64String(builder.Configuration["Jwt:Key"]);
-var jwtIssuer = builder.Configuration["Jwt:Issuer"];
-var jwtAudience = builder.Configuration["Jwt:Audience"];
+// ---------------- JWT ----------------
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtKeyBytes = Convert.FromBase64String(jwtKey ?? throw new InvalidOperationException("JWT Key is not configured"));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(jwtKeyBytes),
+        ClockSkew = TimeSpan.Zero
+    };
+    
+    // Handle authentication events for better error logging
+    options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtIssuer,
-            ValidAudience = jwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(jwtKey)
-        };
-    });
+            Console.WriteLine($"JWT Authentication failed: {context.Exception.Message}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine($"JWT Token validated for user: {context.Principal?.Identity?.Name}");
+            return Task.CompletedTask;
+        }
+    };
+});
 
-builder.Services.AddAuthorization();
+// ---------------- CORS ----------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("frontend", policy =>
+    {
+        policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+    });
+});
 
 var app = builder.Build();
 
-//
-// -------------------------------------------------------------
-// 7️⃣ APPLY DB MIGRATIONS
-// -------------------------------------------------------------
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
-
-//
-// -------------------------------------------------------------
-// 8️⃣ MIDDLEWARE PIPELINE
-// -------------------------------------------------------------
-app.UseCors("AllowFrontend");
+// ---------------- Middleware ----------------
+app.UseCors("frontend");
 
 if (app.Environment.IsDevelopment())
 {
@@ -143,5 +118,4 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();

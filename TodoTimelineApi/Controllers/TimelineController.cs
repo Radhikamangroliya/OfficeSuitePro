@@ -128,14 +128,42 @@ namespace TodoTimelineApi.Controllers
         // PUT: /api/timeline/{id}
         // =============================================
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEntry(int id, [FromBody] TimelineEntry entry)
+        public async Task<IActionResult> UpdateEntry(int id, [FromBody] TimelineEntryRequest request)
         {
-            var userId = GetUserId();
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState
+                        .Where(x => x.Value?.Errors.Count > 0)
+                        .SelectMany(x => x.Value!.Errors.Select(e => $"{x.Key}: {e.ErrorMessage}"));
+                    return BadRequest(new { error = "Validation failed", details = string.Join(", ", errors) });
+                }
 
-            var updated = await _timelineService.UpdateEntryAsync(id, entry, userId);
-            if (updated == null) return NotFound();
+                if (request == null)
+                {
+                    return BadRequest(new { error = "Entry data is required" });
+                }
 
-            return Ok(updated);
+                var userId = GetUserId();
+                Console.WriteLine($"UpdateEntry called for EntryId: {id}, UserId: {userId}");
+
+                var updated = await _timelineService.UpdateEntryAsync(id, request, userId);
+                if (updated == null)
+                {
+                    Console.WriteLine($"Entry {id} not found or doesn't belong to user {userId}");
+                    return NotFound(new { error = "Entry not found or you don't have permission to update it" });
+                }
+
+                Console.WriteLine($"Entry {id} updated successfully");
+                return Ok(updated);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating entry: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return StatusCode(500, new { error = "Failed to update entry", details = ex.Message });
+            }
         }
 
         // =============================================

@@ -4,9 +4,11 @@ import { TimelineProvider } from "./context/TimelineContext";
 
 import Login from "./pages/Login";
 import Timeline from "./pages/Timeline";
+import TimelineWorkspace from "./pages/TimelineWorkspace";
 import Dashboard from "./pages/Dashboard";
-import CalendarPage from "./pages/CalendarPage";
+import Profile from "./pages/Profile";
 import OAuthCallback from "./pages/OAuthCallback";
+import Navigation from "./components/Navigation";
 
 export default function App() {
   return (
@@ -21,9 +23,11 @@ export default function App() {
 
             <Route path="/" element={<Protected><Timeline /></Protected>} />
 
+            <Route path="/workspace/:entryId?" element={<Protected><TimelineWorkspace /></Protected>} />
+
             <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
 
-            <Route path="/calendar" element={<Protected><CalendarPage /></Protected>} />
+            <Route path="/profile" element={<Protected><Profile /></Protected>} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
 
@@ -36,5 +40,12 @@ export default function App() {
 
 function Protected({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/login" replace />;
+  return token ? (
+    <>
+      <Navigation />
+      {children}
+    </>
+  ) : (
+    <Navigate to="/login" replace />
+  );
 }

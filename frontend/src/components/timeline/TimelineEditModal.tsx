@@ -11,9 +11,17 @@ interface Props {
 
 export const TimelineEditModal = ({ entry, onClose }: Props) => {
   const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState(entry.title);
-  const [description, setDescription] = useState(entry.description || "");
-  const [category, setCategory] = useState(entry.category || "");
+  // Handle both PascalCase and camelCase property names from entry
+  const entryTitle = (entry as any).Title || entry.title || "";
+  const entryDescription = (entry as any).Description || entry.description || "";
+  const entryCategory = (entry as any).Category || entry.category || "";
+  const entryImageUrl = (entry as any).ImageUrl || entry.imageUrl || "";
+  
+  const [title, setTitle] = useState(entryTitle);
+  const [description, setDescription] = useState(entryDescription);
+  const [category, setCategory] = useState(entryCategory);
+  const [imageUrl, setImageUrl] = useState(entryImageUrl);
+  
   const { editEntry } = useTimeline();
   const { token } = useAuth();
 
@@ -28,15 +36,33 @@ export const TimelineEditModal = ({ entry, onClose }: Props) => {
 
     setLoading(true);
     try {
-      await editEntry(entry.id, {
-        title: title.trim(),
-        description: description.trim() || undefined,
-        category: category || undefined,
-      });
+      // Build update data object with PascalCase properties (matching backend DTO)
+      // Only include fields that have values (don't send undefined or empty strings for optional fields)
+      const updateData: any = {
+        Title: title.trim(), // Required field
+      };
+      
+      // Add optional fields only if they have values
+      if (description.trim()) {
+        updateData.Description = description.trim();
+      }
+      if (category) {
+        updateData.Category = category;
+      }
+      if (imageUrl.trim()) {
+        updateData.ImageUrl = imageUrl.trim();
+      }
+      
+      // Get entry ID (handle both naming conventions)
+      const entryId = entry.id || (entry as any).Id;
+      
+      console.log("Updating entry with data:", updateData);
+      await editEntry(entryId, updateData);
       onClose();
     } catch (error: any) {
       console.error("Failed to update entry:", error);
-      alert(`Failed to update entry: ${error.message || "Please try again"}`);
+      console.error("Error response:", error.response?.data);
+      alert(`Failed to update entry: ${error.response?.data?.error || error.response?.data?.details || error.message || "Please try again"}`);
     } finally {
       setLoading(false);
     }
@@ -53,7 +79,7 @@ export const TimelineEditModal = ({ entry, onClose }: Props) => {
         className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5"
       >
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-2xl font-semibold text-gray-900">Edit Entry</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Edit My Entry</h2>
           <button
             type="button"
             onClick={onClose}
@@ -69,7 +95,7 @@ export const TimelineEditModal = ({ entry, onClose }: Props) => {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Title"
             required
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all"
           />
         </div>
 
@@ -79,7 +105,7 @@ export const TimelineEditModal = ({ entry, onClose }: Props) => {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Description"
             rows={4}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all resize-none"
           />
         </div>
 
@@ -87,7 +113,7 @@ export const TimelineEditModal = ({ entry, onClose }: Props) => {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all bg-white"
           >
             <option value="">Select Category (optional)</option>
             <option value="GitHub">GitHub</option>
@@ -103,18 +129,31 @@ export const TimelineEditModal = ({ entry, onClose }: Props) => {
           </select>
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Image URL (optional)
+          </label>
+          <input
+            type="url"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="https://example.com/image.jpg"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all"
+          />
+        </div>
+
         <div className="flex gap-3 pt-2">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+            className="flex-1 px-6 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all shadow-sm hover:shadow-md font-semibold"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all duration-200"
+            className="flex-1 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all shadow-sm hover:shadow-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Saving..." : "Save Changes"}
           </button>

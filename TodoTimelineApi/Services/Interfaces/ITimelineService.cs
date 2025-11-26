@@ -1,4 +1,5 @@
 using TodoTimelineApi.Models;
+using TodoTimelineApi.DTOs;
 
 namespace TodoTimelineApi.Services.Interfaces
 {
@@ -7,7 +8,7 @@ namespace TodoTimelineApi.Services.Interfaces
         Task<List<TimelineEntry>> GetUserTimelineAsync(int userId);
         Task<TimelineEntry?> GetEntryByIdAsync(int id, int userId);
         Task<TimelineEntry> CreateEntryAsync(TimelineEntry entry);
-        Task<TimelineEntry?> UpdateEntryAsync(int id, TimelineEntry updated, int userId);
+        Task<TimelineEntry?> UpdateEntryAsync(int id, TimelineEntryRequest request, int userId);
         Task<bool> DeleteEntryAsync(int id, int userId);
     }
 }

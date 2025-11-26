@@ -15,7 +15,7 @@ export const authApi = {
     return res.data;
   },
 
-  // ⭐ ADD THIS METHOD ⭐
+  
   async getAllUsers(token: string) {
     try {
       const res = await axios.get(`${API_BASE}/users`, {
@@ -23,7 +23,7 @@ export const authApi = {
       });
       return res.data;
     } catch (err: any) {
-      // graceful fallback if your backend does NOT have /api/auth/users
+      
       if (err.response?.status === 404) return [];
       throw err;
     }

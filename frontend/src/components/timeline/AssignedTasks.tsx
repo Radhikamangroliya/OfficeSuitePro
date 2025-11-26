@@ -208,7 +208,7 @@ export const AssignedTasks = () => {
     const statusLower = status.toLowerCase();
     switch (statusLower) {
       case "in progress":
-        return "bg-blue-100 text-blue-700";
+        return "bg-gray-100 text-gray-700";
       case "completed":
         return "bg-green-100 text-green-700";
       case "pending":
@@ -257,7 +257,7 @@ export const AssignedTasks = () => {
   return (
     <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Assigned Tasks</h3>
+        <h3 className="text-lg font-semibold text-gray-900">My Tasks</h3>
         <button
           onClick={() => setShowAddTask(!showAddTask)}
           className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
@@ -274,7 +274,7 @@ export const AssignedTasks = () => {
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
             placeholder="Enter task title..."
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 mb-2"
             onKeyPress={(e) => e.key === "Enter" && addTask()}
             autoFocus
           />
@@ -282,7 +282,7 @@ export const AssignedTasks = () => {
           <select
             value={selectedAssigner}
             onChange={(e) => setSelectedAssigner(e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white mb-2"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 bg-white mb-2"
           >
             {teamMembers.map(member => (
               <option key={member} value={member}>{member}</option>
@@ -292,7 +292,7 @@ export const AssignedTasks = () => {
           <select
             value={selectedAssignee}
             onChange={(e) => setSelectedAssignee(e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white mb-2"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 bg-white mb-2"
           >
             {teamMembers.map(member => (
               <option key={member} value={member}>{member}</option>
@@ -301,7 +301,7 @@ export const AssignedTasks = () => {
           <div className="flex gap-2 mt-2">
             <button
               onClick={addTask}
-              className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-3 py-1.5 text-sm bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors"
             >
               Add Task
             </button>
@@ -364,7 +364,7 @@ export const AssignedTasks = () => {
                           </span>
                         )}
                         {task.assignedTo && task.assignedTo !== "You" && (
-                          <span className="text-xs text-blue-600 flex items-center gap-1">
+                          <span className="text-xs text-gray-800 flex items-center gap-1">
                             <User className="w-3 h-3" />
                             To {task.assignedTo}
                           </span>
@@ -378,7 +378,7 @@ export const AssignedTasks = () => {
                       className="flex-shrink-0 mt-1"
                     >
                       {task.completed ? (
-                        <CheckCircle2 className="w-5 h-5 text-blue-600" />
+                        <CheckCircle2 className="w-5 h-5 text-gray-800" />
                       ) : (
                         <Circle className="w-5 h-5 text-gray-300" />
                       )}
@@ -419,7 +419,7 @@ export const AssignedTasks = () => {
                           className="flex-shrink-0"
                         >
                           {subTask.completed ? (
-                            <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                            <CheckCircle2 className="w-4 h-4 text-gray-800" />
                           ) : (
                             <Circle className="w-4 h-4 text-gray-300" />
                           )}

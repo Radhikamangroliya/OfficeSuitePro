@@ -15,26 +15,55 @@ namespace TodoTimelineApi.Services
             _config = config;
         }
 
-        public async Task<object> GetGithubActivityAsync(string githubUsername)
+        private async Task<object> MakeGitHubRequest(string url)
         {
-            var token = _config["Github:Token"]; // from appsettings.json
-
-            // GitHub API endpoint
-            string url = $"https://api.github.com/users/{githubUsername}/events";
-
+            var token = _config["Github:Token"];
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.UserAgent.Add(new ProductInfoHeaderValue("MyApp", "1.0"));
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (!string.IsNullOrEmpty(token))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
 
             var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
-                return new { error = "Failed to fetch GitHub activity." };
+                return new { error = $"Failed to fetch from GitHub API. Status: {response.StatusCode}" };
 
             var json = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<object>(json);
+            return JsonSerializer.Deserialize<object>(json) ?? new { error = "Empty response from GitHub" };
+        }
 
-            return result;
+        public async Task<object> GetGithubActivityAsync(string githubUsername)
+        {
+            string url = $"https://api.github.com/users/{githubUsername}/events/public";
+            return await MakeGitHubRequest(url);
+        }
+
+        public async Task<object> GetGithubProfileAsync(string githubUsername)
+        {
+            string url = $"https://api.github.com/users/{githubUsername}";
+            return await MakeGitHubRequest(url);
+        }
+
+        public async Task<object> GetGithubReposAsync(string githubUsername)
+        {
+            string url = $"https://api.github.com/users/{githubUsername}/repos?sort=updated&per_page=100";
+            return await MakeGitHubRequest(url);
+        }
+
+        public async Task<object> GetGithubContributionsAsync(string githubUsername)
+        {
+            // GitHub doesn't have a direct API for contribution graph, but we can get events and calculate
+            // For now, return recent activity which can be used to show contributions
+            string url = $"https://api.github.com/users/{githubUsername}/events/public?per_page=100";
+            return await MakeGitHubRequest(url);
+        }
+
+        public async Task<object> GetGithubCommitsAsync(string githubUsername, string repo)
+        {
+            string url = $"https://api.github.com/repos/{githubUsername}/{repo}/commits?author={githubUsername}&per_page=30";
+            return await MakeGitHubRequest(url);
         }
     }
 }

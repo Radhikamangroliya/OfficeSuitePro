@@ -7,13 +7,13 @@ interface ViewToggleProps {
 
 export const ViewToggle = ({ view, onViewChange }: ViewToggleProps) => {
   return (
-    <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-1">
+    <div className="flex items-center gap-2">
       <button
         onClick={() => onViewChange("list")}
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+        className={`px-6 py-3 rounded-lg font-semibold transition-all shadow-sm hover:shadow-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
           view === "list"
-            ? "bg-blue-600 text-white shadow-sm"
-            : "text-gray-600 hover:bg-gray-50"
+            ? "bg-gray-800 text-white hover:bg-gray-900"
+            : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
         }`}
       >
         <List className="w-4 h-4" />
@@ -21,10 +21,10 @@ export const ViewToggle = ({ view, onViewChange }: ViewToggleProps) => {
       </button>
       <button
         onClick={() => onViewChange("calendar")}
-        className={`px-3 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+        className={`px-6 py-3 rounded-lg font-semibold transition-all shadow-sm hover:shadow-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
           view === "calendar"
-            ? "bg-blue-600 text-white shadow-sm"
-            : "text-gray-600 hover:bg-gray-50"
+            ? "bg-gray-800 text-white hover:bg-gray-900"
+            : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
         }`}
       >
         <Calendar className="w-4 h-4" />

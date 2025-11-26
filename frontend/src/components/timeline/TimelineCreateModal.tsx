@@ -83,7 +83,7 @@ export const TimelineCreateModal = () => {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2"
+        className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all shadow-sm hover:shadow-md font-semibold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span>+</span>
         <span>Add Entry</span>
@@ -100,7 +100,7 @@ export const TimelineCreateModal = () => {
             className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 space-y-5"
           >
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-2xl font-semibold text-gray-900">Create Entry</h2>
+              <h2 className="text-2xl font-semibold text-gray-900">Add to My Timeline</h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -115,7 +115,7 @@ export const TimelineCreateModal = () => {
                 name="title" 
                 placeholder="Title" 
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all"
               />
             </div>
 
@@ -155,7 +155,7 @@ export const TimelineCreateModal = () => {
                 type="url" 
                 name="imageUrl" 
                 placeholder="https://example.com/image.jpg"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all"
               />
             </div>
 
@@ -167,7 +167,7 @@ export const TimelineCreateModal = () => {
                 type="text" 
                 name="externalId" 
                 placeholder="Enter external ID or leave empty for auto-generated UUID"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all"
               />
             </div>
 
@@ -179,7 +179,7 @@ export const TimelineCreateModal = () => {
                 type="url" 
                 name="externalUrl" 
                 placeholder="https://placeholder.url"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all"
               />
             </div>
 
@@ -202,14 +202,14 @@ export const TimelineCreateModal = () => {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                className="flex-1 px-6 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all shadow-sm hover:shadow-md font-semibold"
               >
                 Cancel
               </button>
               <button 
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all duration-200"
+                className="flex-1 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all shadow-sm hover:shadow-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Creating..." : "Create"}
               </button>

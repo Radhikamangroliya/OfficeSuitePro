@@ -1,21 +1,30 @@
-namespace TodoTimelineApi.DTOs;
+namespace TodoTimelineApi.DTOs
+{
+    // Used ONLY for: POST /api/auth/google/token
+    public class GoogleTokenDto
+    {
+        public string IdToken { get; set; } = string.Empty;
+    }
 
-public record GoogleLoginRequest(string IdToken);
-public record MicrosoftLoginRequest(string Code);
+    // Old OAuth code-flow DTO (still optional)
+    public record GoogleLoginRequest(string IdToken);
 
-public record UserInfo(
-    string Id,
-    string Email,
-    string Name,
-    string? Picture,
-    string Provider
-);
+    public record MicrosoftLoginRequest(string Code);
 
-public record AuthResponse(
-    string Token,
-    string RefreshToken,
-    DateTime ExpiresAt,
-    UserInfo User
-);
+    public record UserInfo(
+        string Id,
+        string Email,
+        string Name,
+        string? Picture,
+        string Provider
+    );
 
-public record RefreshTokenRequest(string RefreshToken);
+    public record AuthResponse(
+        string Token,
+        string RefreshToken,
+        DateTime ExpiresAt,
+        UserInfo User
+    );
+
+    public record RefreshTokenRequest(string RefreshToken);
+}
