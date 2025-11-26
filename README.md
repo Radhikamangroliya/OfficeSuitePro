@@ -258,12 +258,12 @@ npm install
 - `tailwindcss`: CSS framework
 - `@vitejs/plugin-react`: Vite React plugin
 
-#### Step 3: Configure Google Client ID
+#### Step 3: create .env and Google Client ID 
 
-The Google Client ID is configured in `src/context/AuthContext.tsx`. Update it if needed:
+The Google Client ID(.env) is stored in `frontend/.env`. Update it if needed:
 
 ```typescript
-client_id: "YOUR_GOOGLE_CLIENT_ID"
+VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
 ```
 
 #### Step 4: Run the Frontend
