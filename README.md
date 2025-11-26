@@ -384,7 +384,7 @@ localStorage.getItem("token")
 **From Swagger UI:**
 1. Go to http://localhost:5007/swagger
 2. Click "Authorize" button
-3. Enter: `Bearer <your-jwt-token>`
+3. Enter: `<your-jwt-token>`
 4. Click "Authorize"
 
 ---
