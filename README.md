@@ -315,7 +315,7 @@ VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
 npm run dev
 ```
 
-The frontend will start on **http://localhost:5173**
+The frontend will start on **http://localhost:5173/login**
 
 ---
 
@@ -348,7 +348,7 @@ npm run dev
 
 ### 1. Google OAuth Token (Automatic)
 
-1. Open http://localhost:5173
+1. Open http://localhost:5173/login
 2. Click "Sign in with Google"
 3. Select your Google account
 4. The frontend automatically:
