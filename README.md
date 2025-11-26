@@ -403,8 +403,10 @@ localStorage.getItem("token")
    **http://localhost:5007/swagger**
 
 ### Using Swagger UI
-
 1. **View All Endpoints**: All API endpoints are listed by controller
+Test in Swagger
+Open http://localhost:5007/swagger
+
 2. **Test Endpoints**:
    - Click on an endpoint to expand
    - Click "Try it out"
@@ -418,10 +420,32 @@ localStorage.getItem("token")
 4. **View Response**: See response code, headers, and body
 5. **View Schema**: Click "Schema" to see request/response models
 
-**Note on `GET /api/auth/google`**: 
-- This endpoint normally redirects to Google OAuth (for browser use)
-- To test in Swagger, add query parameter `format=json` (e.g., `/api/auth/google?format=json`)
-- This returns JSON with the OAuth URL instead of redirecting
+
+**Note on `GET /api/auth/google`**:
+
+Click "Try it out"
+Add query parameter: `format = json`
+Click "Execute"
+You should now see a JSON response like:
+```
+{
+  "oauthUrl": "https://accounts.google.com/o/oauth2/v2/auth?...",
+  "redirectUri": "http://localhost:5007/api/auth/google/callback",
+  "message": "Use this URL to initiate Google OAuth flow..."
+}
+```
+
+2. add authorize token 
+find` GET/api/auth/me`
+Click "Execute"
+You should now see a JSON response like:
+```
+{
+  "id": "2",
+  "email": null,
+  "name": "Radhika Mangroliya"
+}
+```
 
 ### Swagger Endpoints
 
@@ -935,41 +959,27 @@ This project is licensed under the MIT License.
 
 ---
 
+##📌 Video Link
+
+👉 Demo Video: https://youtu.be/GVHjykv2etk
+
+
+This video includes:
+
+Project introduction
+
+Frontend walkthrough (Dashboard, Timeline, Workspace, Profile)
+
+Google OAuth login
+
+Timeline CRUD demo
+
+GitHub API integration demo
+
+Full Swagger API walkthrough
+
+End-to-end architecture explanation
 **Happy Coding! 🚀**
-How to Test in Swagger
-Go to http://localhost:5007/swagger
-Find GET /api/auth/google
-Click "Try it out"
-Add query parameter: format = json
-Click "Execute"
-You should now see a JSON response like:
-
-{
-  "oauthUrl": "https://accounts.google.com/o/oauth2/v2/auth?...",
-  "redirectUri": "http://localhost:5007/api/auth/google/callback",
-  "message": "Use this URL to initiate Google OAuth flow..."
-}
-
-Test in Swagger
-Open http://localhost:5007/swagger
-Find GET /api/auth/google
-Click "Try it out"
-Click "Execute" (no parameters needed)
-You should see a JSON response like:
-{
-  "oauthUrl": "https://accounts.google.com/o/oauth2/v2/auth?...",
-  "redirectUri": "http://localhost:5007/api/auth/google/callback",
-  "message": "Use this URL to initiate Google OAuth flow..."
-}
 
 
-add authorize token 
-find GET/api/auth/me
-Click "Execute"
-You should now see a JSON response like:
-{
-  "id": "2",
-  "email": null,
-  "name": "Radhika Mangroliya"
-}
 
