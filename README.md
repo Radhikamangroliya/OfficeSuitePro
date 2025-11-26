@@ -347,6 +347,7 @@ npm run dev
 ### Access the Application
 
 - **Frontend Application**: http://localhost:5173
+- **Frontend Login pagen**: http://localhost:5173/login
 - **Backend API**: http://localhost:5007/api
 - **Swagger Documentation**: http://localhost:5007/swagger
 
