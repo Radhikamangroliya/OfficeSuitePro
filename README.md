@@ -244,27 +244,6 @@ The backend will start on **http://localhost:5007**
 cd frontend
 ```
 
-#### Step 2: Install Dependencies
-
-```bash
-npm install
-```
-
-**Key Dependencies:**
-- `react` & `react-dom`: React framework
-- `react-router-dom`: Routing
-- `axios`: HTTP client
-- `lucide-react`: Icons
-- `tailwindcss`: CSS framework
-- `@vitejs/plugin-react`: Vite React plugin
-
-#### Step 3: create .env and Google Client ID 
-
-The Google Client ID(.env) is stored in `frontend/.env`. Update it if needed:
-
-```typescript
-VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
-```
 ####📦 Install Frontend Dependencies (React + TypeScript)
 
 Your frontend uses React, TypeScript, Axios, routing, TailwindCSS, icons, and Vite.
@@ -315,6 +294,29 @@ index.css(`src/index.css`) must include:
 }
 
 ```
+
+#### Step 2: Install Dependencies
+
+```bash
+npm install
+```
+
+**Key Dependencies:**
+- `react` & `react-dom`: React framework
+- `react-router-dom`: Routing
+- `axios`: HTTP client
+- `lucide-react`: Icons
+- `tailwindcss`: CSS framework
+- `@vitejs/plugin-react`: Vite React plugin
+
+#### Step 3: create .env and Google Client ID 
+
+The Google Client ID(.env) is stored in `frontend/.env`. Update it if needed:
+
+```typescript
+VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
+```
+
 
 #### Step 4: Run the Frontend
 
